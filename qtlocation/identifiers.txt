@@ -1,0 +1,273 @@
+# -*- Mode: Conf; -*-
+
+### QDeclarativeGeoMap > QcMapItem
+### QGeoMapPinchEvent > QcMapPinchEvent
+### QQuickGeoMapGestureArea > QcMapGestureArea
+### QQuickGeoCoordinateAnimation > QcGeoCoordinateAnimation
+### QGeoMap > QcMapItem
+### 
+### QPointF > QcVectorDouble
+### 
+### m_start_dist > m_start_distance
+### m_start_coord > m_start_coordinate
+### m_touch_center_coord > m_touch_center_coordinate
+### m_last_pos_time > m_last_position_time
+### m_last_pos > m_last_position
+### 
+### pointCount > number_of_points
+### setAccepted
+### m_pointCount > m_number_of_points
+### setCenter
+### setAngle
+### setPoint
+### setPointCount > set_number_of_points
+### setEnabled
+### # enabledChanged
+### pinchActive
+### isPinchActive
+### # pinchActiveChanged
+### panActive
+### isPanActive
+### # panActiveChanged
+### rotationActive
+### isRotationActive
+### # rotationActiveChanged
+### tiltActive
+### isTiltActive
+### # tiltActiveChanged
+### acceptedGestures
+### setAcceptedGestures
+### # acceptedGesturesChanged
+### maximumZoomLevelChange
+### setMaximumZoomLevelChange
+### # maximumZoomLevelChangeChanged
+### flickDeceleration
+### setFlickDeceleration
+### # flickDecelerationChanged
+### preventStealing
+### setPreventStealing
+### # preventStealingChanged
+### isActive
+### maxChange
+### handleTouchEvent
+### handleWheelEvent
+### handleMousePressEvent
+### handleMouseMoveEvent
+### handleMouseReleaseEvent
+### handleMouseUngrabEvent
+### handleTouchUngrabEvent
+### setMinimumZoomLevel
+### minimumZoomLevel
+### setMaximumZoomLevel
+### maximumZoomLevel
+### setMap
+### pinchStarted
+### pinchUpdated
+### pinchFinished
+### panStarted
+### panFinished
+### flickStarted
+### flickFinished
+### rotationStarted
+### rotationUpdated
+### rotationFinished
+### tiltStarted
+### tiltUpdated
+### tiltFinished
+### touchPointStateMachine
+### startOneTouchPoint
+### updateOneTouchPoint
+### startTwoTouchPoints
+### updateTwoTouchPoints
+### tiltStateMachine
+### canStartTilt
+### startTilt
+### updateTilt
+### endTilt
+### rotationStateMachine
+### canStartRotation
+### startRotation
+### updateRotation
+### endRotation
+### pinchStateMachine
+### canStartPinch
+### startPinch
+### updatePinch
+### endPinch
+### panStateMachine
+### canStartPan
+### updatePan
+### tryStartFlick
+### startFlick
+### timeMs
+### stopFlick
+### pinchEnabled
+### setPinchEnabled
+### rotationEnabled
+### setRotationEnabled
+### tiltEnabled
+### setTiltEnabled
+### panEnabled
+### setPanEnabled
+### flickEnabled
+### setFlickEnabled
+### handleFlickAnimationStopped
+### stopPan
+### clearTouchData
+### updateFlickParameters
+### m_declarativeMap
+### m_pinchEnabled
+### m_rotationEnabled
+### m_tiltEnabled
+### m_startDist
+### m_lastAngle
+### maximumChange
+### m_startBearing
+### m_previousTouchAngle
+### m_totalAngle
+### m_startTouchCentroid
+### m_startTilt
+### m_lastPoint
+### m_acceptedGestures
+### m_maxVelocity
+### m_flickEnabled
+### m_panEnabled
+### m_flickVector
+### m_lastPosTime
+### m_lastPos
+### m_allPoints
+### m_touchPoints
+### m_mousePoint
+### m_sceneStartPoint
+### m_startCoord
+### m_touchCenterCoord
+### m_twoTouchAngle
+### m_twoTouchAngleStart
+### m_distanceBetweenTouchPoints
+### m_distanceBetweenTouchPointsStart
+### m_twoTouchPointsCentroidStart
+### m_touchPointsCentroid
+### m_preventStealing
+### touchPoints
+### m_touchPointState
+### pinchInactive > PinchInactive
+### pinchInactiveTwoPoints > PinchInactiveTwoPoints
+### m_pinchState
+### rotationInactive > RotationInactive
+### rotationInactiveTwoPoints > RotationInactiveTwoPoints
+### m_rotationState
+### tiltInactive
+### tiltInactiveTwoPoints
+### m_tiltState
+### flickInactive
+### flickActive
+### m_flickState
+### setTouchPointState
+### setFlickState
+### setTiltState
+### setRotationState
+### setPinchState
+
+
+distanceBetweenTouchPoints
+angleFromPoints
+touchAngle
+angleDelta
+pointDragged
+pOld
+pNew
+## startDragDistance
+vectorSize
+touchAngleTilting
+movingParallelVertical
+newAngle
+oldAngle
+angleDiff
+
+# onPinchFinished
+# toCoordinate
+# onPinchStarted
+# onPinchUpdated
+# onPanStarted
+# onPanFinished
+# onFlickStarted
+# onFlickFinished
+# onRotationStarted
+# onRotationUpdated
+# onRotationFinished
+# onTiltStarted
+# onTiltUpdated
+# onTiltFinished
+
+# setTargetObject
+# setProperty
+# setEasing
+# setKeepMouseGrab
+# setKeepTouchGrab
+# stateActive
+# createTouchPointFromMouseEvent
+# newPoint
+# setPos
+# setScenePos
+# windowPos
+# setScreenPos
+# screenPos
+# setState
+# setId
+# handleEvent
+# isEmpty
+# isNull
+# wheelGeoPos
+# preZoomPoint
+# bearingDelta
+# setBearing
+# tiltDelta
+# setTilt
+# zoomLevelDelta
+# maxZL
+# setZoomLevel
+# zoomLevel
+# postZoomPoint
+# fromCoordinate
+# geoPos
+# alignCoordinateToPoint
+# setX
+# setY
+# setLongitude
+# setLatitude
+## mapFromScene
+# scenePosition
+# startCoord
+# scenePos
+# startPos
+# lastState
+# validateTouchAngleForTilting
+# verticalDisplacement
+# newTilt
+# newBearing
+# newZoomLevel
+# perPinchMinimumZoomLevel
+# perPinchMaximumZoomLevel
+# startCoord_
+# newStartCoord
+# prefetchData
+# mouseReleaseEvent
+# ungrabMouse
+# dyFromPress
+# dxFromPress
+# flickSpeed
+# flickTime
+# flickPixels
+# flickVector
+# animationStartCoordinate
+# isRunning
+# animationEndCoordinate
+# setDuration
+# matBearing
+# cameraData
+# setDirection
+# wrapLong
+# clipLat
+# mercatorMaxLatitude
+# setFrom
+# setTo

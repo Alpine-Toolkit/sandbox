@@ -1,0 +1,412 @@
+--- a.h	2022-05-30 14:49:59.126312929 +0200
++++ g.h	2022-05-30 15:54:23.884080974 +0200
+@@ -75,6 +75,10 @@
+ #include "geometry/vector.h"
+ #include "math/interval.h"
+ 
++// #include <QtCore/QPointer>
++// #include <QtGui/QVector2D>
++// #include <QtPositioning/qgeocoordinate.h>
++
+ #include <QDebug> // Fixme: QtDebug ???
+ #include <QElapsedTimer>
+ #include <QTouchEvent>
+@@ -84,6 +88,11 @@
+ 
+ // QT_BEGIN_NAMESPACE
+ 
++// class QGraphicsSceneMouseEvent;
++// class QTouchEvent;
++// class QWheelEvent;
++// class QcGeoCoordinateAnimation;
++
+ class QcMapItem;
+ 
+ /**************************************************************************************************/
+@@ -147,62 +156,17 @@
+ 
+ /**************************************************************************************************/
+ 
+-struct Zoom
+-{
+-  Zoom()
+-    : m_interval(),
+-      m_start(0.0),
+-      m_previous(0.0),
+-      maximum_change(4.0)
+-  {}
+-
+-  QcIntervalInt m_interval;
+-  qreal m_start;
+-  qreal m_previous;
+-  qreal maximum_change;
+-};
+-
+-/**************************************************************************************************/
+-
+-struct Pinch
+-{
+-  Pinch()
+-    : m_enabled(true),
+-      m_start_distance(0),
+-      m_last_angle(.0)
+-  {}
+-
+-  bool m_enabled;
+-  QcMapPinchEvent m_event;
+-  struct Zoom m_zoom;
+-  QcVectorDouble m_last_point1;
+-  QcVectorDouble m_last_point2;
+-  qreal m_start_distance;
+-  qreal m_last_angle;
+-};
+-
+-/**************************************************************************************************/
+-
+-struct Pan
+-{
+-  bool m_enabled;
+-  qreal m_max_velocity;
+-  qreal m_deceleration;
+-  QcGeoCoordinateAnimation * m_animation; // Fixme
+-};
+-
+-/**************************************************************************************************/
+-
+ class QcMapGestureArea: public QQuickItem
+ {
+   Q_OBJECT
+-
+   Q_ENUMS(GeoMapGesture)
+   Q_FLAGS(AcceptedGestures)
+ 
+   Q_PROPERTY(bool enabled READ enabled WRITE set_enabled NOTIFY enabledChanged)
+   Q_PROPERTY(bool pinch_active READ is_pinch_active NOTIFY pinch_activeChanged)
+   Q_PROPERTY(bool pan_active READ is_pan_active NOTIFY pan_activeChanged)
++  Q_PROPERTY(bool rotation_active READ is_rotation_active NOTIFY rotation_activeChanged)
++  Q_PROPERTY(bool tilt_active READ is_tilt_active NOTIFY tilt_activeChanged)
+   Q_PROPERTY(AcceptedGestures accepted_gestures READ accepted_gestures WRITE set_accepted_gestures NOTIFY accepted_gesturesChanged)
+   Q_PROPERTY(qreal maximum_zoom_level_change READ maximum_zoom_level_change WRITE set_maximum_zoom_level_change NOTIFY maximum_zoom_level_changeChanged)
+   Q_PROPERTY(qreal flick_deceleration READ flick_deceleration WRITE set_flick_deceleration NOTIFY flick_decelerationChanged)
+@@ -216,43 +180,62 @@
+     NoGesture = 0x0000,
+     PinchGesture = 0x0001,
+     PanGesture = 0x0002,
+-    FlickGesture = 0x004
++    FlickGesture = 0x0004,
++    RotationGesture = 0x0008,
++    TiltGesture = 0x0010
+   };
+ 
+   Q_DECLARE_FLAGS(AcceptedGestures, GeoMapGesture)
+ 
+-  AcceptedGestures accepted_gestures() const { return m_accepted_gestures; }
++  AcceptedGestures accepted_gestures() const;
+   void set_accepted_gestures(AcceptedGestures accepted_gestures);
+ 
+   bool is_pinch_active() const;
++  bool is_rotation_active() const;
++  bool is_tilt_active() const;
+   bool is_pan_active() const;
+   bool is_active() const;
+ 
+-  bool enabled() const { return m_enabled; }
++  bool enabled() const;
+   void set_enabled(bool enabled);
+ 
+   qreal maximum_zoom_level_change() const;
+   void set_maximum_zoom_level_change(qreal max_change);
+ 
+-  qreal flick_deceleration() const { return m_flick.m_deceleration; }
++  qreal flick_deceleration() const;
+   void set_flick_deceleration(qreal deceleration);
+ 
+-  void set_zoom_level_interval(const QcIntervalInt interval);
++  // void set_zoom_level_interval(const QcIntervalInt interval);
+ 
+-  bool prevent_stealing() const { return m_prevent_stealing; }
+-  void set_prevent_stealing(bool prevent);
++  // bool prevent_stealing() const { return m_prevent_stealing; }
++  // void set_prevent_stealing(bool prevent);
+ 
+   void handle_touch_event(QTouchEvent * event);
++  // #if QT_CONFIG(wheelevent)
+   void handle_wheel_event(QWheelEvent * event);
++  // #endif
+   void handle_mouse_press_event(QMouseEvent * event);
+   void handle_mouse_move_event(QMouseEvent * event);
+   void handle_mouse_release_event(QMouseEvent * event);
+   void handle_mouse_ungrab_event();
+   void handle_touch_ungrab_event();
+ 
++  // void set_minimum_zoom_level(qreal min);
++  // qreal minimum_zoom_level() const;
++
++  // void set_maximum_zoom_level(qreal max);
++  // qreal maximum_zoom_level() const;
++
++  // void set_map(QcMapItem * map);
++
++  // bool prevent_stealing() const;
++  // void set_prevent_stealing(bool prevent);
++
+ Q_SIGNALS:
+   void pan_activeChanged();
+   void pinch_activeChanged();
++  void rotation_activeChanged();
++  void tilt_activeChanged();
+   void enabledChanged();
+   void maximum_zoom_level_changeChanged();
+   void accepted_gesturesChanged();
+@@ -264,17 +247,17 @@
+   void pan_finished();
+   void flick_started();
+   void flick_finished();
++  void rotation_started(QcMapPinchEvent * pinch);
++  void rotation_updated(QcMapPinchEvent * pinch);
++  void rotation_finished(QcMapPinchEvent * pinch);
++  void tilt_started(QcMapPinchEvent * pinch);
++  void tilt_updated(QcMapPinchEvent * pinch);
++  void tilt_finished(QcMapPinchEvent * pinch);
+   void prevent_stealingChanged();
+ 
+ private:
+-  const QTouchEvent::TouchPoint & first_point() const  { return m_all_points.at(0); }
+-  const QTouchEvent::TouchPoint & second_point() const { return m_all_points.at(1); }
+-
+   void update();
+ 
+-  bool is_press_and_hold();
+-  bool is_double_click();
+-
+   // Create general data relating to the touch points
+   void touch_point_state_machine();
+   void start_one_touch_point();
+@@ -282,6 +265,20 @@
+   void start_two_touch_points();
+   void update_two_touch_points();
+ 
++  // All two fingers vertical parallel panning related code, which encompasses tilting
++  void tilt_state_machine();
++  bool can_start_tilt();
++  void start_tilt();
++  void update_tilt();
++  void end_tilt();
++
++  // All two fingers rotation related code, which encompasses rotation
++  void rotation_state_machine();
++  bool can_start_rotation();
++  void start_rotation();
++  void update_rotation();
++  void end_rotation();
++
+   // All pinch related code, which encompasses zoom
+   void pinch_state_machine();
+   bool can_start_pinch();
+@@ -298,24 +295,133 @@
+   void start_flick(int dx, int dy, int time_ms = 0);
+   void stop_flick();
+ 
+-  bool pinch_enabled() const { return m_pinch.m_enabled; }
++  bool pinch_enabled() const;
+   void set_pinch_enabled(bool enabled);
+-  bool pan_enabled() const { return m_pan_enabled; }
++  bool rotation_enabled() const;
++  void set_rotation_enabled(bool enabled);
++  bool tilt_enabled() const;
++  void set_tilt_enabled(bool enabled);
++  bool pan_enabled() const;
+   void set_pan_enabled(bool enabled);
+-  bool flick_enabled() const { return m_flick.m_enabled; }
++  bool flick_enabled() const;
+   void set_flick_enabled(bool enabled);
+ 
+-private slots:
++// private slots:
++private Q_SLOTS:
+   void handle_flick_animation_stopped();
+-  void handle_press_timer_timeout();
+ 
+ private:
+   void stop_pan();
+   void clear_touch_data();
+-  void update_velocity_list(const QcVectorDouble & pos);
++  void update_flick_parameters(const QcVectorDouble & pos);
++
++private:
++  QcMapItem * m_map;
++  QcMapItem * m_declarative_map;
++  bool m_enabled;
++
++  // This should be intended as a "two fingers gesture" struct
++  struct Pinch
++  {
++    Pinch()
++      : m_pinch_enabled(true),
++        m_rotation_enabled(true),
++        m_tilt_enabled(true),
++        m_start_distanceanceanceance(0),
++        m_last_angle(0.0)
++    {}
++
++    QcMapPinchEvent m_event;
++    bool m_pinch_enabled;
++    bool m_rotation_enabled;
++    bool m_tilt_enabled;
++    struct Zoom
++    {
++      Zoom()
++        : m_interval(),
++          // m_minimum(0.0),
++          // m_maximum(30.0),
++          m_start(0.0),
++          m_previous(0.0),
++          maximum_change(4.0)
++      {}
++      QcIntervalInt m_interval;
++      // qreal m_minimum;
++      // qreal m_maximum;
++      qreal m_start;
++      qreal m_previous;
++      qreal maximum_change;
++    } m_zoom;
++
++    struct Rotation
++    {
++      Rotation()
++        : m_start_bearing(0.0),
++          m_previous_touch_angle(0.0),
++          m_total_angle(0.0)
++      {}
++      qreal m_start_bearing;
++      qreal m_previous_touch_angle; // needed for detecting crossing +- 180 in a safer way
++      qreal m_total_angle;
++    } m_rotation;
++
++    struct Tilt
++    {
++      Tilt() {}
++      QcVectorDouble m_start_touch_centroid;
++      qreal m_start_tilt;
++    } m_tilt;
++
++    QcVectorDouble m_last_point1;
++    QcVectorDouble m_last_point2;
++    qreal m_start_distanceanceanceance;
++    qreal m_last_angle;
++  } m_pinch;
++
++  AcceptedGestures m_accepted_gestures;
++
++  struct Pan
++  {
++    Pan()
++      : m_flick_enabled(true),
++        m_pan_enabled(true) ,
++        m_max_velocity(2500),
++        m_deceleration(2500),
++        m_animation(0)
++    {}
++
++    bool m_flick_enabled;
++    bool m_pan_enabled;
++    qreal m_max_velocity;
++    qreal m_deceleration;
++    QcGeoCoordinateAnimation * m_animation;
++  } m_flick;
++
++  // these are calculated regardless of gesture or number of touch points
++  QVector2D m_flick_vector;
++  QElapsedTimer m_last_positionitionitionitionition_time;
++  QcVectorDouble m_last_positionitionitionition;
++  QList<QTouchEvent::TouchPoint> m_all_points;
++  QList<QTouchEvent::TouchPoint> m_touch_points;
++  QScopedPointer<QTouchEvent::TouchPoint> m_mouse_point;
++  QcVectorDouble m_scene_start_point1;
++
++  // only set when two points in contact
++  QcVectorDouble m_scene_start_point2;
++  QGeoCoordinate m_start_coordinateinateinateinate;
++  QGeoCoordinate m_touch_center_coordinateinateinateinate;
++  qreal m_two_touch_angle;
++  qreal m_two_touch_angle_start;
++  qreal m_distance_between_touch_points;
++  qreal m_distance_between_touch_points_start;
++  QcVectorDouble m_two_touch_points_centroid_start;
++  QcVectorDouble m_touch_points_centroid;
++  bool m_prevent_stealing;
++  bool m_pan_enabled;
+ 
+ private:
+   // prototype state machine...
++
+   enum TouchPointState
+     {
+       TouchPoints0,
+@@ -330,6 +436,20 @@
+       PinchActive
+     } m_pinch_state;
+ 
++  enum RotationState
++    {
++      RotationInactive,
++      RotationInactiveTwoPoints,
++      RotationActive
++    } m_rotation_state;
++
++  enum TiltState
++    {
++      TiltInactive,
++      TiltInactiveTwoPoints,
++      TiltActive
++    } m_tilt_state;
++
+   enum FlickState
+     {
+       FlickInactive,
+@@ -337,40 +457,11 @@
+       FlickActive
+     } m_flick_state;
+ 
+-private:
+-  QcMapItem * m_map;
+-  bool m_enabled;
+-  AcceptedGestures m_accepted_gestures;
+-
+-  // These are calculated regardless of gesture or number of touch points
+-  QScopedPointer<QTouchEvent::TouchPoint> m_mouse_point; // mouse event data (pointer so as to by undefined)
+-  QList<QTouchEvent::TouchPoint> m_touch_points; // touch event data
+-  QList<QTouchEvent::TouchPoint> m_all_points; // combined (touch and mouse) event data
+-
+-  QcVectorDouble m_last_position_for_velocity; // used to compute velocity; first point or middle item position, then updated
+-  QElapsedTimer m_last_position_for_velocity_time; // used to compute velocity
+-  qreal m_velocity_x; // [px/s]
+-  qreal m_velocity_y;
+-
+-  QTimer m_press_timer; // used to detect press and hold
+-  bool m_was_press_and_hold;
+-  QScopedPointer<QMouseEvent> m_mouse_event;
+-  QElapsedTimer m_press_time; // used to detect press and hold
+-  QElapsedTimer m_double_press_time; // used to detect double click
+-  QcVectorDouble m_start_position1; // first point item position
+-  QcVectorDouble m_current_position; // first point or middle item position, then updated
+-  QcWgsCoordinate m_start_coordinate; // first point or middle coordinate, then updated when mouse pointer slides on the map
+-
+-  // Only set when two points in contact
+-  QcVectorDouble m_start_position2; // second point position
+-  QcWgsCoordinate m_touch_center_coordinate; // scene center coordinate
+-  qreal m_two_touch_angle;
+-  qreal m_distance_between_touch_points;
+-  bool m_prevent_stealing;
+-  bool m_pan_enabled;
+-
+-  struct Pinch m_pinch;
+-  struct Pan m_flick;
++  inline void set_touch_point_state(const TouchPointState state);
++  inline void set_flick_state(const FlickState state);
++  inline void set_tilt_state(const TiltState state);
++  inline void set_rotation_state(const RotationState state);
++  inline void set_pinch_state(const PinchState state);
+ };
+ 
+ // QT_END_NAMESPACE
