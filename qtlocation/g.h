@@ -69,9 +69,9 @@
 
 /**************************************************************************************************/
 
-#include "geo_coordinate_animation.h"
 #include "coordinate/mercator.h"
 #include "coordinate/wgs84.h"
+#include "geo_coordinate_animation.h"
 #include "geometry/vector.h"
 #include "math/interval.h"
 
@@ -109,41 +109,80 @@ class QcMapPinchEvent : public QObject
   Q_PROPERTY(bool accepted READ accepted WRITE set_accepted)
 
 public:
-  QcMapPinchEvent(const QcVectorDouble & center, qreal angle,
-                  const QcVectorDouble & point1, const QcVectorDouble & point2, int number_of_points = 0,
+  QcMapPinchEvent(const QcVectorDouble & center,
+                  qreal angle,
+                  const QcVectorDouble & point1,
+                  const QcVectorDouble & point2,
+                  int number_of_points = 0,
                   bool accepted = true)
-    : QObject(),
-      m_center(center),
-      m_point1(point1),
-      m_point2(point2),
-      m_angle(angle),
-      m_number_of_points(number_of_points),
-      m_accepted(accepted)
+    : QObject()
+    , m_center(center)
+    , m_point1(point1)
+    , m_point2(point2)
+    , m_angle(angle)
+    , m_number_of_points(number_of_points)
+    , m_accepted(accepted)
   {}
   QcMapPinchEvent()
-    : QObject(),
-      m_angle(0.0),
-      m_number_of_points(0),
-      m_accepted(true)
+    : QObject()
+    , m_angle(0.0)
+    , m_number_of_points(0)
+    , m_accepted(true)
   {}
 
-  QcVectorDouble center() const { return m_center; }
-  void set_center(const QcVectorDouble & center) { m_center = center; }
+  QcVectorDouble center() const
+  {
+    return m_center;
+  }
+  void set_center(const QcVectorDouble & center)
+  {
+    m_center = center;
+  }
 
-  qreal angle() const { return m_angle; }
-  void set_angle(qreal angle) { m_angle = angle; }
+  qreal angle() const
+  {
+    return m_angle;
+  }
+  void set_angle(qreal angle)
+  {
+    m_angle = angle;
+  }
 
-  QcVectorDouble point1() const { return m_point1; }
-  void set_point1(const QcVectorDouble & p) { m_point1 = p; }
+  QcVectorDouble point1() const
+  {
+    return m_point1;
+  }
+  void set_point1(const QcVectorDouble & p)
+  {
+    m_point1 = p;
+  }
 
-  QcVectorDouble point2() const { return m_point2; }
-  void set_point2(const QcVectorDouble & p) { m_point2 = p; }
+  QcVectorDouble point2() const
+  {
+    return m_point2;
+  }
+  void set_point2(const QcVectorDouble & p)
+  {
+    m_point2 = p;
+  }
 
-  int number_of_points() const { return m_number_of_points; }
-  void set_number_of_points(int number_of_points) { m_number_of_points = number_of_points; }
+  int number_of_points() const
+  {
+    return m_number_of_points;
+  }
+  void set_number_of_points(int number_of_points)
+  {
+    m_number_of_points = number_of_points;
+  }
 
-  bool accepted() const { return m_accepted; }
-  void set_accepted(bool status) { m_accepted = status; }
+  bool accepted() const
+  {
+    return m_accepted;
+  }
+  void set_accepted(bool status)
+  {
+    m_accepted = status;
+  }
 
 private:
   QcVectorDouble m_center;
@@ -156,7 +195,7 @@ private:
 
 /**************************************************************************************************/
 
-class QcMapGestureArea: public QQuickItem
+class QcMapGestureArea : public QQuickItem
 {
   Q_OBJECT
   Q_ENUMS(GeoMapGesture)
@@ -306,7 +345,7 @@ private:
   bool flick_enabled() const;
   void set_flick_enabled(bool enabled);
 
-// private slots:
+  // private slots:
 private Q_SLOTS:
   void handle_flick_animation_stopped();
 
@@ -324,11 +363,11 @@ private:
   struct Pinch
   {
     Pinch()
-      : m_pinch_enabled(true),
-        m_rotation_enabled(true),
-        m_tilt_enabled(true),
-        m_start_distanceanceanceance(0),
-        m_last_angle(0.0)
+      : m_pinch_enabled(true)
+      , m_rotation_enabled(true)
+      , m_tilt_enabled(true)
+      , m_start_distanceanceanceance(0)
+      , m_last_angle(0.0)
     {}
 
     QcMapPinchEvent m_event;
@@ -338,12 +377,13 @@ private:
     struct Zoom
     {
       Zoom()
-        : m_interval(),
-          // m_minimum(0.0),
-          // m_maximum(30.0),
-          m_start(0.0),
-          m_previous(0.0),
-          maximum_change(4.0)
+        : m_interval()
+        ,
+        // m_minimum(0.0),
+        // m_maximum(30.0),
+        m_start(0.0)
+        , m_previous(0.0)
+        , maximum_change(4.0)
       {}
       QcIntervalInt m_interval;
       // qreal m_minimum;
@@ -356,9 +396,9 @@ private:
     struct Rotation
     {
       Rotation()
-        : m_start_bearing(0.0),
-          m_previous_touch_angle(0.0),
-          m_total_angle(0.0)
+        : m_start_bearing(0.0)
+        , m_previous_touch_angle(0.0)
+        , m_total_angle(0.0)
       {}
       qreal m_start_bearing;
       qreal m_previous_touch_angle; // needed for detecting crossing +- 180 in a safer way
@@ -383,13 +423,12 @@ private:
   struct Pan
   {
     Pan()
-      : m_flick_enabled(true),
-        m_pan_enabled(true) ,
-        m_max_velocity(2500),
-        m_deceleration(2500),
-        m_animation(0)
+      : m_flick_enabled(true)
+      , m_pan_enabled(true)
+      , m_max_velocity(2500)
+      , m_deceleration(2500)
+      , m_animation(0)
     {}
-
     bool m_flick_enabled;
     bool m_pan_enabled;
     qreal m_max_velocity;
@@ -422,40 +461,35 @@ private:
 private:
   // prototype state machine...
 
-  enum TouchPointState
-    {
-      TouchPoints0,
-      TouchPoints1,
-      TouchPoints2
-    } m_touch_point_state;
+  enum TouchPointState {
+    TouchPoints0,
+    TouchPoints1,
+    TouchPoints2
+  } m_touch_point_state;
 
-  enum PinchState
-    {
-      PinchInactive,
-      PinchInactiveTwoPoints,
-      PinchActive
-    } m_pinch_state;
+  enum PinchState {
+    PinchInactive,
+    PinchInactiveTwoPoints,
+    PinchActive
+  } m_pinch_state;
 
-  enum RotationState
-    {
-      RotationInactive,
-      RotationInactiveTwoPoints,
-      RotationActive
-    } m_rotation_state;
+  enum RotationState {
+    RotationInactive,
+    RotationInactiveTwoPoints,
+    RotationActive
+  } m_rotation_state;
 
-  enum TiltState
-    {
-      TiltInactive,
-      TiltInactiveTwoPoints,
-      TiltActive
-    } m_tilt_state;
+  enum TiltState {
+    TiltInactive,
+    TiltInactiveTwoPoints,
+    TiltActive
+  } m_tilt_state;
 
-  enum FlickState
-    {
-      FlickInactive,
-      PanActive,
-      FlickActive
-    } m_flick_state;
+  enum FlickState {
+    FlickInactive,
+    PanActive,
+    FlickActive
+  } m_flick_state;
 
   inline void set_touch_point_state(const TouchPointState state);
   inline void set_flick_state(const FlickState state);
